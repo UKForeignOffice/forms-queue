@@ -1,0 +1,21 @@
+version: "3.9"
+services:
+  api:
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+    ports:
+      - "9000:9000"
+  worker:
+    build:
+      context: .
+      dockerfile: worker/Dockerfile
+  postgres:
+    container_name: postgres
+    image: "postgres:16"
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: notarial
+      POSTGRES_PASSWORD: root
+      POSTGRES_USER: user
