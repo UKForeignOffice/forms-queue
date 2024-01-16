@@ -17,11 +17,6 @@ Worker is a process which listens to a database-backed queue, and sends it to th
 4. Docker >= 3.9 - [Install docker engine](https://docs.docker.com/engine/install/)
 
 
-## Workspaces
-Currently, there is only workspace in this project:
-
-* [api](./api/README.md)
-
 ### Getting started with Docker
 You may use docker and docker compose to build and start the project with the right components (e.g. database, microservices), but will not be able to run the application(s) in dev mode.
 
