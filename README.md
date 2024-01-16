@@ -1,5 +1,14 @@
-# notarial-api
-This ia a monorepo used for the notarial services apis, which power the [prove your eligibility to a foreign government forms](https://github.com/UKForeignOffice/prove-eligibility-foreign-government-forms).
+# forms-queue
+This ia a monorepo for forms-queue/reference-api and forms-queue/worker. 
+
+## @forms-queue/reference-api
+
+Reference-api is a microservice which will store a job_id (uuid) against a reference number by POST request. 
+
+## @forms-queue/worker
+
+Worker is a process which listens to a database-backed queue, and sends it to the configured webhook. 
+
 
 ## Prerequisites
 1. A node version manager, like [nvm](https://formulae.brew.sh/formula/nvm), or [n](https://github.com/tj/n)
