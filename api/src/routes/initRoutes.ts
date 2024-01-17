@@ -1,7 +1,7 @@
 import { Express, Router } from "express";
+import { jobIdRouter } from "./reference/jobIdRouter";
 
 const router = Router();
-
 
 router.get("/health-check", (_req, res) => {
   res.send({
@@ -10,6 +10,8 @@ router.get("/health-check", (_req, res) => {
     timestamp: Date.now(),
   });
 });
+
+router.use("/reference", jobIdRouter);
 export function initRoutes(server: Express) {
   server.use(router);
 }

@@ -17,30 +17,18 @@
 /**
  * Category of the error - this is likely to match the service it came from
  */
-export type ErrorTypes = "WEBHOOK" | "FILE" | "SES" | "NOTIFY" | "GENERIC";
+export type ErrorTypes = "REFERENCE" | "GENERIC";
 
 /**
  * Error code for the matching ErrorType.
  */
-type WebhookErrorCode = "EMPTY_PAYLOAD" | "EMPTY_TEMPLATE_DATA";
-type FileErrorCode = "EMPTY_RES" | "API_ERROR" | "NOT_FOUND";
-type SESErrorCode =
-  | "NO_TEMPLATE"
-  | "TEMPLATE_NOT_FOUND"
-  | "TEMPLATE_PART_MISSING"
-  | "TEMPLATE_VAR_MISSING"
-  | "EMPTY_RES"
-  | "BAD_REQUEST"
-  | "API_ERROR"
-  | "UNKNOWN";
-type NotifyErrorCode = "NO_API_KEY" | "MISSING_TEMPLATE" | "UNKNOWN";
 
 type GenericErrorCode = "UNKNOWN" | "RATE_LIMIT_EXCEEDED";
-
+type ReferenceErrorCode = "CLIENT" | "CREATE_FAILED" | "VALIDATION";
 /**
  * Union of all the different ErrorCode.
  */
-export type ErrorCode = WebhookErrorCode | FileErrorCode | SESErrorCode | NotifyErrorCode | GenericErrorCode;
+export type ErrorCode = ReferenceErrorCode | GenericErrorCode;
 
 /**
  * {@ErrorRecord} uses `Record`, which means every key passed into the generic, must be implemented
@@ -49,32 +37,10 @@ export type ErrorCode = WebhookErrorCode | FileErrorCode | SESErrorCode | Notify
  */
 type ErrorRecord<T extends ErrorCode> = Record<T, string>;
 
-const WEBHOOK: ErrorRecord<WebhookErrorCode> = {
-  EMPTY_PAYLOAD: "Malformed form data: No questions property found",
-  EMPTY_TEMPLATE_DATA: "No template data was returned",
-};
-
-const FILE: ErrorRecord<FileErrorCode> = {
-  EMPTY_RES: "The file server did not return a response",
-  API_ERROR: "There was an error returning this file",
-  NOT_FOUND: "The requested file could not be found",
-};
-
-const SES: ErrorRecord<SESErrorCode> = {
-  NO_TEMPLATE: "no template id was set for the specified form",
-  TEMPLATE_NOT_FOUND: "no template with the specified id could be found",
-  TEMPLATE_PART_MISSING: "the template subject line or body were missing",
-  TEMPLATE_VAR_MISSING: "a required variable was missing from the template data",
-  EMPTY_RES: "The email service did not return a response",
-  BAD_REQUEST: "The email data being sent was malformed",
-  API_ERROR: "The email service returned an error",
-  UNKNOWN: "There was an unknown error sending the email",
-};
-
-const NOTIFY: ErrorRecord<NotifyErrorCode> = {
-  NO_API_KEY: "No Notify API key has been set",
-  MISSING_TEMPLATE: "A notify template id has not been set",
-  UNKNOWN: "There waa an unknown error sending the email",
+const DATABASE: ErrorRecord<ReferenceErrorCode> = {
+  CLIENT: "ORM Client error",
+  CREATE_FAILED: "Adding jobId with reference failed",
+  VALIDATION: "Invalid payload",
 };
 
 const GENERIC: ErrorRecord<GenericErrorCode> = {
@@ -83,16 +49,10 @@ const GENERIC: ErrorRecord<GenericErrorCode> = {
 };
 
 type ErrorRecords = {
-  WEBHOOK: typeof WEBHOOK;
-  FILE: typeof FILE;
-  SES: typeof SES;
-  NOTIFY: typeof NOTIFY;
   GENERIC: typeof GENERIC;
+  DATABASE: typeof DATABASE;
 };
 export const ERRORS: ErrorRecords = {
-  WEBHOOK,
-  FILE,
-  SES,
-  NOTIFY,
+  DATABASE,
   GENERIC,
 };

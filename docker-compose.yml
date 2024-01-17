@@ -16,6 +16,6 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_DB: notarial
+      POSTGRES_DB: reference
       POSTGRES_PASSWORD: root
       POSTGRES_USER: user

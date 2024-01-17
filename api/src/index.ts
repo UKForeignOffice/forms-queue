@@ -9,8 +9,8 @@ async function initApp(): Promise<void> {
   server.listen(config.get("port"), () => {
     initLogger.info(
       `Server listening on PORT: ${config.get("port")}, NODE_ENV: ${config.get(
-        "env"
-      )}`
+        "env",
+      )}`,
     );
   });
 

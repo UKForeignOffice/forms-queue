@@ -6,8 +6,8 @@ import { initMiddleware } from "./middlewares";
 
 const server = express();
 export function createServer(): Express {
-  configureRateLimit(server);
   initMiddleware(server);
+  configureRateLimit(server);
   initRoutes(server);
   configureErrorHandlers(server);
 

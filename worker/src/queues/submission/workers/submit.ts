@@ -2,7 +2,6 @@ import { default as axios } from "axios";
 import pino from "pino";
 import { Job } from "pg-boss";
 import { SubmitJob } from "./types";
-import { sendTestJob } from "./testJob";
 
 const queue = "submission";
 const worker = "submit";
@@ -21,13 +20,19 @@ export async function submitHandler(job: Job<SubmitJob>) {
   const { data, id } = job;
   const requestBody = data.data;
   const url = data.webhook_url;
-
   try {
     const res = await axios.post(url, requestBody);
+
     const reference = res.data.reference;
-    logger.info(jobLogData, `job: ${id} posted successfully to ${url} and responded with reference: ${reference}`);
-  } catch (e) {
-    logger.error(jobLogData, `job: ${id} failed with ${e.cause.code}`);
+    if (reference) {
+      logger.info(jobLogData, `job: ${id} posted successfully to ${url} and responded with reference: ${reference}`);
+      return { reference };
+    }
+  } catch (e: any) {
+    logger.error(jobLogData, `job: ${id} failed with ${e.cause ?? e.message}`);
+    if (e.cause instanceof AggregateError) {
+      throw { errors: e.cause.errors };
+    }
     throw e;
   }
 }

@@ -4,7 +4,12 @@ import { ERRORS } from "../errors";
 import logger from "pino";
 const stackLogger = logger();
 
-function errorLogger(error: Error, req: Request, _res: Response, next: NextFunction) {
+function errorLogger(
+  error: Error,
+  req: Request,
+  _res: Response,
+  next: NextFunction,
+) {
   if (error instanceof ApplicationError) {
     const { name, code } = error;
     const summary = `${ERRORS[name][code]}`;
@@ -16,34 +21,29 @@ function errorLogger(error: Error, req: Request, _res: Response, next: NextFunct
   req.log.error(error);
   next(error);
 }
-function errorHandler(error: Error, _req: Request, res: Response, _next: NextFunction) {
+function errorHandler(
+  error: Error,
+  _req: Request,
+  res: Response,
+  _next: NextFunction,
+) {
   res.status(500);
   if (error instanceof ApplicationError) {
     res.status(error.httpStatusCode);
 
     if (!error.exposeToClient) {
-      return;
+      return res.send({ error: error.code });
     }
 
-    res.send({
+    return res.send({
       error: error.code,
       message: error.message,
     });
-
-    return;
   }
 
-  res.send({ message: error.message });
-}
-
-function notFoundHandler(req: Request, res: Response) {
-  req.log.warn("404 Not found", { path: req.path });
-  res.status(404).send({
-    error: "The requested resource is unavailable",
-  });
+  return res.send({ message: error.message });
 }
 
 export function configureErrorHandlers(server: Express) {
-  server.use(errorLogger, errorHandler);
-  server.use(notFoundHandler);
+  server.use("/", errorLogger, errorHandler);
 }

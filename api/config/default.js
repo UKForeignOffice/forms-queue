@@ -5,4 +5,7 @@ if (process.env.NODE_ENV !== "test") {
 }
 
 module.exports = {
+  databaseUrl: "postgres://user@root@localhost:5432/reference",
+  port: "3001",
+  env: "development",
 };
