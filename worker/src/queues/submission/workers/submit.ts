@@ -21,9 +21,12 @@ export async function submitHandler(job: Job<SubmitJob>) {
   const requestBody = data.data;
   const url = data.webhook_url;
   try {
-    const res = await axios.post(url, requestBody);
-
+    const res = await axios.post(url, requestBody, {
+      timeout: 2000,
+    });
     const reference = res.data.reference;
+    logger.info(res);
+    logger.info(res.data.toString());
     if (reference) {
       logger.info(jobLogData, `job: ${id} posted successfully to ${url} and responded with reference: ${reference}`);
       return { reference };

@@ -225,14 +225,14 @@ workflows:
             - VPN
             - AWS
 
-#      - deploy:
-#          name: deploy-test
-#          namespace: fco-forms-test
-#          context:
-#            - VPN
-#            - AWS
-#          requires:
-#            - publish-api
+      - deploy:
+          name: deploy-test
+          namespace: fco-forms-test
+          context:
+            - VPN
+            - AWS
+          requires:
+            - publish-worker
 #          filters:
 #            tags:
 #              only: /v[0-9]+(\.[0-9]+)*/
