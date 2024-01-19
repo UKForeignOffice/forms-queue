@@ -4,4 +4,4 @@
 .yarn/install-state.gz
 **/dist
 **/.env
-/api/coverage/
+coverage

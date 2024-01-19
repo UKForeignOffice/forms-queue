@@ -2619,7 +2619,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/parser@npm:^6.18.1":
+"@typescript-eslint/parser@npm:^6.18.1, @typescript-eslint/parser@npm:^6.19.0":
   version: 6.19.0
   resolution: "@typescript-eslint/parser@npm:6.19.0"
   dependencies:
@@ -4402,6 +4402,7 @@ __metadata:
   resolution: "forms-queue@workspace:."
   dependencies:
     "@types/jest": "npm:^29.5.6"
+    "@typescript-eslint/parser": "npm:^6.19.0"
     dotenv: "npm:^16.3.1"
     eslint: "npm:^8.52.0"
     eslint-config-prettier: "npm:^9.0.0"
