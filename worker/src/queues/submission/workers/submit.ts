@@ -10,20 +10,22 @@ const worker = "submit";
 const logger = pino();
 export const metadata = { queue, worker };
 const REQUEST_TIMEOUT = Number.parseInt(config.get<string>("Submission.requestTimeout"));
-logger.info(`REQUEST_TIMEOUT set to ${REQUEST_TIMEOUT}`);
+logger.info(metadata, `REQUEST_TIMEOUT set to ${REQUEST_TIMEOUT}`);
 
-axios.interceptors.request.use((x) => {
+axios.interceptors.request.use((intercepted) => {
   // @ts-ignore
-  x.meta = x.meta || {};
+  intercepted.meta = intercepted.meta ?? {};
   // @ts-ignore
-  x.meta.requestStartedAt = new Date().getTime();
-  return x;
+  intercepted.meta.requestStartedAt = new Date().getTime();
+  return intercepted;
 });
 
-axios.interceptors.response.use((x) => {
+axios.interceptors.response.use((intercepted) => {
   // @ts-ignore
-  console.log(`Execution time for: ${x.config.url} - ${new Date().getTime() - x.config.meta.requestStartedAt} ms`);
-  return x;
+  intercepted.meta.requestFinishedAt = new Date().getTime();
+  // @ts-ignore
+  intercepted.meta.responseTime = intercepted.meta.requestFinishedAt - intercepted.config.meta.requestStartedAt;
+  return intercepted;
 });
 
 /**
@@ -41,10 +43,10 @@ export async function submitHandler(job: Job<SubmitJob>) {
     const res = await axios.post(url, requestBody, {
       timeout: REQUEST_TIMEOUT,
     });
+    // @ts-ignore
+    logger.info(jobLogData, `${url} took ${res.meta.responseTime}ms`);
     const reference = res.data.reference;
-    logger.info(res);
-    logger.info(jobLogData, res.headers[""]);
-    logger.info(res.data.toString());
+    logger.info(JSON.stringify(res.data));
     if (reference) {
       logger.info(jobLogData, `job: ${id} posted successfully to ${url} and responded with reference: ${reference}`);
       return { reference };
