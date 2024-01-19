@@ -3,11 +3,9 @@
   "version": "0.0.1",
   "private": true,
   "workspaces": [
-    "api",
     "worker"
   ],
   "scripts": {
-    "api": "yarn workspace @forms-queue/api",
     "worker": "yarn workspace @forms-queue/worker",
     "lint": "yarn workspaces foreach run lint",
     "test": "yarn workspaces foreach run test",
