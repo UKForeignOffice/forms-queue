@@ -22,9 +22,9 @@ axios.interceptors.request.use((intercepted) => {
 
 axios.interceptors.response.use((intercepted) => {
   // @ts-ignore
-  intercepted.meta.requestFinishedAt = new Date().getTime();
+  intercepted.config.meta.requestFinishedAt = new Date().getTime();
   // @ts-ignore
-  intercepted.meta.responseTime = intercepted.meta.requestFinishedAt - intercepted.config.meta.requestStartedAt;
+  intercepted.config.meta.responseTime = intercepted.config.meta.requestFinishedAt - intercepted.config.meta.requestStartedAt;
   return intercepted;
 });
 
@@ -44,8 +44,8 @@ export async function submitHandler(job: Job<SubmitJob>) {
       timeout: REQUEST_TIMEOUT,
     });
     // @ts-ignore
-    logger.info(jobLogData, `${url} took ${res.meta.responseTime}ms`);
-    logger.info(jobLogData, `${url} responded with ${res.status} - ${res.data}`);
+    logger.info(jobLogData, `${url} took ${res.config.meta.responseTime}ms`);
+    logger.info(jobLogData, `${url} responded with ${res.status} - ${JSON.stringify(res.data)}`);
 
     const reference = res.data.reference;
     if (reference) {
