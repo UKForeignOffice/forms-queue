@@ -1,7 +1,6 @@
 import { getConsumer } from "../../../Consumer";
 import * as submit from "./submit";
 import pino from "pino";
-import { sendTestJob } from "./testSubmitJob";
 import PgBoss from "pg-boss";
 
 const logger = pino();
@@ -15,5 +14,3 @@ export async function setupSubmissionWorkers() {
   logger.info({ queue }, `starting 'submitHandler' on ${queue} listeners`);
   await consumer.work("submission", { newJobCheckInterval: 500 }, submit.submitHandler);
 }
-
-sendTestJob();
