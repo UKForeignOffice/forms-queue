@@ -30,6 +30,7 @@ export async function submitHandler(job: Job<SubmitJob>) {
     }
   } catch (e: any) {
     logger.error(jobLogData, `job: ${id} failed with ${e.cause ?? e.message}`);
+    // @ts-ignore
     if (e.cause instanceof AggregateError) {
       throw { errors: e.cause.errors };
     }
