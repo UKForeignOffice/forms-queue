@@ -221,6 +221,7 @@ workflows:
             branches:
               only:
                 - deploy-test
+                - main
           context:
             - VPN
             - AWS
