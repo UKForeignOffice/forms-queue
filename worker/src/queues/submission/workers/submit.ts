@@ -28,6 +28,7 @@ export async function submitHandler(job: Job<SubmitJob>) {
       logger.info(jobLogData, `job: ${id} posted successfully to ${url} and responded with reference: ${reference}`);
       return { reference };
     }
+    return;
   } catch (e: any) {
     logger.error(jobLogData, `job: ${id} failed with ${e.cause ?? e.message}`);
     // @ts-ignore
