@@ -1,5 +1,8 @@
 {
   "Queue": {
-    "host": "QUEUE_HOST"
+    "url": "QUEUE_URL"
+  },
+  "Submission": {
+    "requestTimeout": "SUBMISSION_REQUEST_TIMEOUT"
   }
 }

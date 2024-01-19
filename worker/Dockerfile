@@ -29,8 +29,8 @@ FROM base AS dist
 WORKDIR /usr/dist/app
 COPY .yarn .yarn
 COPY --from=build /usr/src/app/node_modules node_modules
-COPY --from=build /usr/src/app/api/config config
-COPY --from=build /usr/src/app/api/dist dist
+COPY --from=build /usr/src/app/worker/config config
+COPY --from=build /usr/src/app/worker/dist dist
 
 USER node
 EXPOSE 9000
