@@ -215,12 +215,12 @@ workflows:
       - publish:
           name: publish-worker
           app: worker
-          filters:
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*/
-            branches:
-              only:
-                - deploy-test
+#          filters:
+#            tags:
+#              only: /v[0-9]+(\.[0-9]+)*/
+#            branches:
+#              only:
+#                - deploy-test
           context:
             - VPN
             - AWS

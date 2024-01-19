@@ -1,5 +1,5 @@
 {
   "Queue": {
-    "host": "QUEUE_HOST"
+    "url": "QUEUE_URL"
   }
 }
