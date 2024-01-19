@@ -27,13 +27,13 @@ jobs:
 
       - run: yarn install
 
-#      - run:
-#          name: Lint
-#          command: yarn lint
-#
-#      - run:
-#          name: Run tests
-#          command: yarn test
+      - run:
+          name: Lint
+          command: yarn worker lint
+
+      - run:
+          name: Run tests
+          command: yarn worker test
 
       - save_cache:
           key: v1-deps-{{ checksum "yarn.lock" }}
