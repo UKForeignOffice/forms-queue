@@ -22,14 +22,14 @@ The log will look like:
 If the logs are incomplete, further logging may be found on the database in the `output` column.
 
 ```postgresql
-    select data, output from job where id = '6aa3b250-4bc8-4fcb-9a15-7ca56551d04b';
+    select data, output from pgboss.job where id = '6aa3b250-4bc8-4fcb-9a15-7ca56551d04b';
 ```
 
 `ECONNREFUSED` may be due to misconfigured webhook_url.
 
 Events can easily be retried by setting completedon = null, retrycount = 0, state = 'created'
 ```postgresql
-    update job
+    update pgboss.job
     set data = jsonb_set(
             data,
             '{webhook_url}',
@@ -43,7 +43,7 @@ Events can easily be retried by setting completedon = null, retrycount = 0, stat
 
 If you wish to keep a record of the failed event, create a new event using the failed events details.
 ```postgresql
-    insert into job (name, data)
+    insert into pgboss.job (name, data)
     SELECT name, data
-    from job where id = '4aad27dc-db53-48e4-824b-612a4b3d9fa7';
+    from pgboss.job where id = '4aad27dc-db53-48e4-824b-612a4b3d9fa7';
 ```

@@ -1,9 +1,5 @@
 # forms-queue
-This ia a monorepo for forms-queue/reference-api and forms-queue/worker. 
-
-## @forms-queue/reference-api
-
-Reference-api is a microservice which will store a job_id (uuid) against a reference number by POST request. 
+This ia a monorepo for forms-queue/worker. 
 
 ## @forms-queue/worker
 
@@ -12,8 +8,8 @@ Worker is a process which listens to a database-backed queue, and sends it to th
 
 ## Prerequisites
 1. A node version manager, like [nvm](https://formulae.brew.sh/formula/nvm), or [n](https://github.com/tj/n)
-2. node 18.x.x
-3. yarn >= v1.22. This project uses yarn 3. Yarn v1.22 will load the correct version of yarn by looking at [.yarnrc](./.yarnrc.yml) and [.yarn](./yarn)
+2. node 20.x.x
+3. yarn >= v1.22. This project uses yarn 4. Yarn v1.22 will load the correct version of yarn by looking at [.yarnrc](./.yarnrc.yml) and [.yarn](./yarn)
 4. Docker >= 3.9 - [Install docker engine](https://docs.docker.com/engine/install/)
 
 

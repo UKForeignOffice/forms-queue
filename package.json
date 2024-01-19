@@ -5,6 +5,9 @@
   "workspaces": [
     "worker"
   ],
+  "engines": {
+    "node": ">=20.11.0"
+  },
   "scripts": {
     "worker": "yarn workspace @forms-queue/worker",
     "lint": "yarn workspaces foreach run lint",
