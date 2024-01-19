@@ -2,13 +2,15 @@ import { default as axios } from "axios";
 import pino from "pino";
 import { Job } from "pg-boss";
 import { SubmitJob } from "./types";
+import config from "config";
 
 const queue = "submission";
 const worker = "submit";
 
 const logger = pino();
 export const metadata = { queue, worker };
-
+const REQUEST_TIMEOUT = Number.parseInt(config.get<string>("Submission.requestTimeout"));
+logger.info(`REQUEST_TIMEOUT set to ${REQUEST_TIMEOUT}`);
 /**
  * When a "submission" event is detected, this worker POSTs the data to `job.data.data.webhook_url`
  * The source of this event is the runner, after a user has submitted a form.
