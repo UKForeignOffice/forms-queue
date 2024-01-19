@@ -45,8 +45,9 @@ export async function submitHandler(job: Job<SubmitJob>) {
     });
     // @ts-ignore
     logger.info(jobLogData, `${url} took ${res.meta.responseTime}ms`);
+    logger.info(jobLogData, `${url} responded with ${res.status} - ${res.data}`);
+
     const reference = res.data.reference;
-    logger.info(JSON.stringify(res.data));
     if (reference) {
       logger.info(jobLogData, `job: ${id} posted successfully to ${url} and responded with reference: ${reference}`);
       return { reference };
