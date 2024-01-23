@@ -7,26 +7,12 @@ import config from "config";
 const queue = "submission";
 const worker = "submit";
 
+const ERROR_CODE = "SUBMIT_ERROR";
+
 const logger = pino();
 export const metadata = { queue, worker };
 const REQUEST_TIMEOUT = Number.parseInt(config.get<string>("Submission.requestTimeout"));
 logger.info(metadata, `REQUEST_TIMEOUT set to ${REQUEST_TIMEOUT}`);
-
-axios.interceptors.request.use((intercepted) => {
-  // @ts-ignore
-  intercepted.meta = intercepted.meta ?? {};
-  // @ts-ignore
-  intercepted.meta.requestStartedAt = new Date().getTime();
-  return intercepted;
-});
-
-axios.interceptors.response.use((intercepted) => {
-  // @ts-ignore
-  intercepted.config.meta.requestFinishedAt = new Date().getTime();
-  // @ts-ignore
-  intercepted.config.meta.responseTime = intercepted.config.meta.requestFinishedAt - intercepted.config.meta.requestStartedAt;
-  return intercepted;
-});
 
 /**
  * When a "submission" event is detected, this worker POSTs the data to `job.data.data.webhook_url`
@@ -54,7 +40,25 @@ export async function submitHandler(job: Job<SubmitJob>) {
     }
     return;
   } catch (e: any) {
-    logger.error(jobLogData, `job: ${id} failed with ${e.cause ?? e.message}`);
+    logger.error(jobLogData, `${ERROR_CODE} job: ${id} failed with ${e.cause ?? e.message}`);
+
+    if (e.response) {
+      logger.error(jobLogData, `${ERROR_CODE} ${JSON.stringify(e.response.data)}`);
+      const { message, name, code, response } = e;
+      const { status, data } = response;
+      throw {
+        message,
+        name,
+        code,
+        status,
+        data,
+      };
+    }
+
+    if (e.request) {
+      logger.error(jobLogData, `${ERROR_CODE} request could not be sent, see database for error`);
+    }
+
     // @ts-ignore
     if (e.cause instanceof AggregateError) {
       throw { errors: e.cause.errors };
@@ -62,3 +66,19 @@ export async function submitHandler(job: Job<SubmitJob>) {
     throw e;
   }
 }
+
+axios.interceptors.request.use((intercepted) => {
+  // @ts-ignore
+  intercepted.meta = intercepted.meta ?? {};
+  // @ts-ignore
+  intercepted.meta.requestStartedAt = new Date().getTime();
+  return intercepted;
+});
+
+axios.interceptors.response.use((intercepted) => {
+  // @ts-ignore
+  intercepted.config.meta.requestFinishedAt = new Date().getTime();
+  // @ts-ignore
+  intercepted.config.meta.responseTime = intercepted.config.meta.requestFinishedAt - intercepted.config.meta.requestStartedAt;
+  return intercepted;
+});
