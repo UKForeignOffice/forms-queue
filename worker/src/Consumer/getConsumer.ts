@@ -3,14 +3,25 @@ import PgBoss from "pg-boss";
 import { ApplicationError } from "../utils/ApplicationError";
 import pino from "pino";
 
-const DEFAULT_URL = config.get<string>("Queue.url");
+const URL = config.get<string>("Queue.url");
 const logger = pino();
-
 let consumer;
 
-export async function create(url: string = DEFAULT_URL) {
-  logger.info({ method: "Consumer.create" }, `Starting consumer at ${url}`);
-  const boss = new PgBoss(url);
+const MINUTE_IN_S = 60;
+const HOUR_IN_S = MINUTE_IN_S * 60;
+const DAY_IN_S = HOUR_IN_S * 24;
+
+const archiveFailedAfterDays = parseInt(config.get<string>("Queue.archiveFailedInDays"));
+const deleteAfterDays = parseInt(config.get<string>("Queue.deleteArchivedAfterDays"));
+
+logger.info({ method: "Consumer.create" }, `archiveFailedAfterDays: ${archiveFailedAfterDays}, deleteAfterDays: ${deleteAfterDays}`);
+
+export async function create() {
+  const boss = new PgBoss({
+    connectionString: URL,
+    archiveFailedAfterSeconds: archiveFailedAfterDays * DAY_IN_S,
+    deleteAfterDays,
+  });
 
   boss.on("error", (error) => {
     throw error;
@@ -22,7 +33,7 @@ export async function create(url: string = DEFAULT_URL) {
     throw new ApplicationError("CONSUMER", "START_FAILED", `Failed to start listener ${e.message}. Exiting`);
   }
 
-  logger.info({ method: "Consumer.create" }, `Successfully started consumer at ${url}`);
+  logger.info({ method: "Consumer.create" }, `Successfully started consumer at ${URL}`);
   return boss;
 }
 
