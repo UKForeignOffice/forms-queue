@@ -25,6 +25,7 @@ export async function submitHandler(job: Job<SubmitJob>) {
   const { data, id } = job;
   const requestBody = data.data;
   const url = data.webhook_url;
+
   try {
     const res = await axios.post(url, requestBody, {
       timeout: REQUEST_TIMEOUT,
@@ -40,7 +41,7 @@ export async function submitHandler(job: Job<SubmitJob>) {
     }
     return;
   } catch (e: any) {
-    logger.error(jobLogData, `${ERROR_CODE} job: ${id} failed with ${e.cause ?? e.message}`);
+    logger.error(jobLogData, `${ERROR_CODE} to ${url} job: ${id} failed with ${e.cause ?? e.message}`);
 
     if (e.response) {
       logger.error(jobLogData, `${ERROR_CODE} ${JSON.stringify(e.response.data)}`);
@@ -56,7 +57,7 @@ export async function submitHandler(job: Job<SubmitJob>) {
     }
 
     if (e.request) {
-      logger.error(jobLogData, `${ERROR_CODE} request could not be sent, see database for error`);
+      logger.error(jobLogData, `${ERROR_CODE} to ${url} request could not be sent, see database for error`);
     }
 
     // @ts-ignore
