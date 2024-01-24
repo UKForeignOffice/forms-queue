@@ -1,6 +1,8 @@
 {
   "Queue": {
-    "url": "QUEUE_URL"
+    "url": "QUEUE_URL",
+    "archiveFailedAfterDays": "ARCHIVE_FAILED_AFTER_DAYS",
+    "deleteArchivedAfterDays": "DELETE_ARCHIVED_IN_DAYS"
   },
   "Submission": {
     "requestTimeout": "SUBMISSION_REQUEST_TIMEOUT"
