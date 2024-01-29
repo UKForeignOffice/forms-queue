@@ -4,7 +4,7 @@ import { ApplicationError } from "../utils/ApplicationError";
 import pino from "pino";
 
 const URL = config.get<string>("Queue.url");
-const logger = pino();
+const logger = pino().child({ method: "Consumer.create" });
 let consumer;
 
 const MINUTE_IN_S = 60;
@@ -14,7 +14,7 @@ const DAY_IN_S = HOUR_IN_S * 24;
 const archiveFailedAfterDays = parseInt(config.get<string>("Queue.archiveFailedInDays"));
 const deleteAfterDays = parseInt(config.get<string>("Queue.deleteArchivedAfterDays"));
 
-logger.info({ method: "Consumer.create" }, `archiveFailedAfterDays: ${archiveFailedAfterDays}, deleteAfterDays: ${deleteAfterDays}`);
+logger.info(`archiveFailedAfterDays: ${archiveFailedAfterDays}, deleteAfterDays: ${deleteAfterDays}`);
 
 export async function create() {
   const boss = new PgBoss({
@@ -33,7 +33,7 @@ export async function create() {
     throw new ApplicationError("CONSUMER", "START_FAILED", `Failed to start listener ${e.message}. Exiting`);
   }
 
-  logger.info({ method: "Consumer.create" }, `Successfully started consumer at ${URL}`);
+  logger.info(`Successfully started consumer at ${URL}`);
   return boss;
 }
 
