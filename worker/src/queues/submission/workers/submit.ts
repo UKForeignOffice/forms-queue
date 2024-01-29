@@ -9,18 +9,21 @@ const worker = "submit";
 
 const ERROR_CODE = "SUBMIT_ERROR";
 
-const logger = pino();
-export const metadata = { queue, worker };
+const logger = pino().child({
+  queue,
+  worker,
+});
+
 const REQUEST_TIMEOUT = Number.parseInt(config.get<string>("Submission.requestTimeout"));
-logger.info(metadata, `REQUEST_TIMEOUT set to ${REQUEST_TIMEOUT}`);
+logger.info(`REQUEST_TIMEOUT set to ${REQUEST_TIMEOUT}`);
 
 /**
  * When a "submission" event is detected, this worker POSTs the data to `job.data.data.webhook_url`
  * The source of this event is the runner, after a user has submitted a form.
  */
 export async function submitHandler(job: Job<SubmitJob>) {
-  const jobLogData = { jobId: job.id, ...metadata };
-  logger.info(jobLogData, `received ${worker} job`);
+  const jobId = job.id;
+  logger.info({ jobId }, `received ${worker} job`);
 
   const { data, id } = job;
   const requestBody = data.data;
@@ -31,20 +34,19 @@ export async function submitHandler(job: Job<SubmitJob>) {
       timeout: REQUEST_TIMEOUT,
     });
     // @ts-ignore
-    logger.info(jobLogData, `${url} took ${res.config?.meta?.responseTime}ms`);
-    logger.info(jobLogData, `${url} responded with ${res.status} - ${JSON.stringify(res.data)}`);
+    logger.info({ jobId, status: res.status, url, data: res.data }, `${url} took ${res.config?.meta?.responseTime}ms`);
 
     const reference = res.data.reference;
     if (reference) {
-      logger.info(jobLogData, `job: ${id} posted successfully to ${url} and responded with reference: ${reference}`);
+      logger.info({ jobId }, `job: ${id} posted successfully to ${url} and responded with reference: ${reference}`);
       return { reference };
     }
     return;
   } catch (e: any) {
-    logger.error(jobLogData, `${ERROR_CODE} to ${url} job: ${id} failed with ${e.cause ?? e.message}`);
+    logger.error({ jobId, err: e, errorCode: ERROR_CODE }, `post to ${url} job: ${id} failed with ${e.cause ?? e.message}`);
 
     if (e.response) {
-      logger.error(jobLogData, `${ERROR_CODE} ${JSON.stringify(e.response.data)}`);
+      logger.error({ jobId, err: e.response.error });
       const { message, name, code, response } = e;
       const { status, data } = response;
       throw {
@@ -57,7 +59,7 @@ export async function submitHandler(job: Job<SubmitJob>) {
     }
 
     if (e.request) {
-      logger.error(jobLogData, `${ERROR_CODE} to ${url} request could not be sent, see database for error`);
+      logger.error(jobId, `post to ${url} request could not be sent, see database for error`);
     }
 
     // @ts-ignore

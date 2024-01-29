@@ -3,14 +3,15 @@ import * as submit from "./submit";
 import pino from "pino";
 import PgBoss from "pg-boss";
 
-const logger = pino();
 const queue = "submission";
-
+const logger = pino().child({
+  queue,
+});
 export async function setupSubmissionWorkers() {
   const consumer: PgBoss = await getConsumer();
 
-  logger.info({ queue }, `starting queue '${queue}' workers`);
+  logger.info(`starting queue '${queue}' workers`);
 
-  logger.info({ queue }, `starting 'submitHandler' on ${queue} listeners`);
+  logger.info(`starting 'submitHandler' listener`);
   await consumer.work("submission", { newJobCheckInterval: 500 }, submit.submitHandler);
 }
