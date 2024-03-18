@@ -30,6 +30,9 @@ export async function create() {
   try {
     await boss.start();
   } catch (e: any) {
+    if (e.errors) {
+      throw new ApplicationError("CONSUMER", "START_FAILED", `Failed to start listener ${e.errors}. Exiting`);
+    }
     throw new ApplicationError("CONSUMER", "START_FAILED", `Failed to start listener ${e.message}. Exiting`);
   }
 
