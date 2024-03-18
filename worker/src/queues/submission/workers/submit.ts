@@ -7,8 +7,6 @@ import config from "config";
 const queue = "submission";
 const worker = "submit";
 
-const ERROR_CODE = "SUBMIT_ERROR";
-
 const logger = pino().child({
   queue,
   worker,
@@ -43,10 +41,8 @@ export async function submitHandler(job: Job<SubmitJob>) {
     }
     return;
   } catch (e: any) {
-    logger.error({ jobId, err: e, errorCode: ERROR_CODE }, `post to ${url} job: ${id} failed with ${e.cause ?? e.message}`);
-
     if (e.response) {
-      logger.error({ jobId, err: e.response.error });
+      logger.error({ jobId, errorCode: "SUBMIT_RESPONSE_ERROR", err: e.response.data }, `${jobId} POST to ${url} failed`);
       const { message, name, code, response } = e;
       const { status, data } = response;
       throw {
@@ -59,13 +55,17 @@ export async function submitHandler(job: Job<SubmitJob>) {
     }
 
     if (e.request) {
-      logger.error(jobId, `post to ${url} request could not be sent, see database for error`);
+      logger.error({ jobId, errorCode: "SUBMIT_REQUEST_ERROR", e }, `post to ${url} request could not be sent`);
+      throw e;
     }
 
     // @ts-ignore
     if (e.cause instanceof AggregateError) {
       throw { errors: e.cause.errors };
     }
+
+    logger.error({ jobId, err: e, errorCode: "SUBMIT_ERROR_UNKNOWN" }, `post to ${url} job: ${id} failed with ${e.cause ?? e.message ?? e}`);
+
     throw e;
   }
 }
