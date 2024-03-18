@@ -7,4 +7,5 @@ module.exports = {
   Submission: {
     requestTimeout: 2000,
   },
+  newJobCheckInterval: "2000",
 };
