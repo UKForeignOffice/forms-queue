@@ -1,5 +1,8 @@
 import { getConsumer } from "../../../Consumer";
 
+/**
+ * Run this function locally (by importing it into index.ts, and running `sendTestJob()`) to test functionality.
+ */
 export async function sendTestJob() {
   const boss = await getConsumer();
   await boss.send(

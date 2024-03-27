@@ -16,6 +16,9 @@ const deleteAfterDays = parseInt(config.get<string>("Queue.deleteArchivedAfterDa
 
 logger.info(`archiveFailedAfterDays: ${archiveFailedAfterDays}, deleteAfterDays: ${deleteAfterDays}`);
 
+/**
+ * Sets up database connection via PgBoss and creates an instance of a "consumer" (consumes the queue).
+ */
 export async function create() {
   const boss = new PgBoss({
     connectionString: URL,
@@ -40,6 +43,10 @@ export async function create() {
   return boss;
 }
 
+/**
+ * `getConsumer` should be used whenever an instance of a consumer is needed.
+ * This is to prevent too many database connections from being opened unnecessarily.
+ */
 export async function getConsumer() {
   try {
     if (!consumer) {
