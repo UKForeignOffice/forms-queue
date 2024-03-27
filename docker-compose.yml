@@ -1,17 +1,13 @@
 version: "3.9"
 services:
-  api:
-    build:
-      context: .
-      dockerfile: api/Dockerfile
-    ports:
-      - "9000:9000"
-    environment:
-      QUEUE_URL: "postgres://user:root@postgres:5432/queue"
   worker:
+    depends_on:
+      - postgres
     build:
       context: .
       dockerfile: worker/Dockerfile
+    environment:
+      QUEUE_URL: postgres://user:root@postgres:5432/queue
   postgres:
     container_name: postgres
     image: "postgres:16"

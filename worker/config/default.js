@@ -8,4 +8,5 @@ module.exports = {
     requestTimeout: 2000,
   },
   newJobCheckInterval: "2000",
+  SUPPRESS_NO_CONFIG_WARNING: true,
 };
