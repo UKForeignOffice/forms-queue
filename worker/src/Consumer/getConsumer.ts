@@ -12,6 +12,7 @@ const DAY_IN_S = HOUR_IN_S * 24;
 
 const archiveFailedAfterDays = parseInt(config.get<string>("Queue.archiveFailedInDays"));
 const deleteAfterDays = parseInt(config.get<string>("Queue.deleteArchivedAfterDays"));
+const schema = config.get<string>("Queue.schema");
 
 const registeredConsumers: Record<string, PgBoss> = {};
 
@@ -53,13 +54,14 @@ export async function create(options: ConsumerOptions) {
  * `getConsumer` should be used whenever an instance of a consumer is needed.
  * This is to prevent too many database connections from being opened unnecessarily.
  */
-export async function getConsumer(name: string) {
-  const consumer = registeredConsumers[name];
+export async function getConsumer(name?: string) {
+  const consumerSchema = name ?? schema;
+  const consumer = registeredConsumers[consumerSchema];
   try {
     if (!consumer) {
-      registeredConsumers[name] = await create({ schema: name });
+      registeredConsumers[consumerSchema] = await create({ schema: consumerSchema });
     }
-    return registeredConsumers[name];
+    return registeredConsumers[consumerSchema];
   } catch (e) {
     logger.error(e);
     process.exit(1);
