@@ -20,8 +20,13 @@ kubectl run -it --rm --env PGPASSWORD='<PASSWORD>' --env PAGER= --image=postgres
 Replace PASSWORD with the password for the database, ENDPOINT_URL with the endpoint URL for the database.
 
 
-
 [pgboss](https://github.com/timgit/pg-boss) is used to manage queueing jobs. On application start, pgboss will automatically create necessary tables in the database.
+
+By default, pgboss will create the schema `pgboss`. The tables will be created in this schema.
+This is configured using the environment variable `QUEUE_SCHEMA`. If you have set this to a different schema, you will need to change the schema in the following queries.
+
+For example, if `QUEUE_SCHEMA` is set to `pgboss_v9`, query the job table with `select * from pgboss_v9.job;`
+
 
 ### Jobs table
 The jobs table `pgboss.job` is where all the current jobs are stored. Jobs will remain here, until they are completed or failed. Then they will move to `pgboss.archive`
