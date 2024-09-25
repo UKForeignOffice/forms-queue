@@ -8,6 +8,6 @@ module.exports = {
   Submission: {
     requestTimeout: 2000,
   },
-  newJobCheckInterval: "2000",
+  pollingIntervalSeconds: 2,
   SUPPRESS_NO_CONFIG_WARNING: true,
 };

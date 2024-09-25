@@ -8,5 +8,5 @@
   "Submission": {
     "requestTimeout": "SUBMISSION_REQUEST_TIMEOUT"
   },
-  "newJobCheckInterval": "NEW_JOB_CHECK_INTERVAL"
+  "pollingIntervalSeconds": "POLLING_INTERVAL_SECONDS"
 }

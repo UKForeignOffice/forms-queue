@@ -34,27 +34,29 @@ The jobs table `pgboss.job` is where all the current jobs are stored. Jobs will 
 The jobs table has the following columns:
 
 ```
-    Column    |            Type             | Collation | Nullable |           Default           
---------------+-----------------------------+-----------+----------+-----------------------------
- id           | uuid                        |           | not null | gen_random_uuid()
- name         | text                        |           | not null | 
- priority     | integer                     |           | not null | 0
- data         | jsonb                       |           |          | 
- state        | pgboss.job_state            |           | not null | 'created'::pgboss.job_state
- retrylimit   | integer                     |           | not null | 0
- retrycount   | integer                     |           | not null | 0
- retrydelay   | integer                     |           | not null | 0
- retrybackoff | boolean                     |           | not null | false
- startafter   | timestamp with time zone    |           | not null | now()
- startedon    | timestamp with time zone    |           |          | 
- singletonkey | text                        |           |          | 
- singletonon  | timestamp without time zone |           |          | 
- expirein     | interval                    |           | not null | '00:15:00'::interval
- createdon    | timestamp with time zone    |           | not null | now()
- completedon  | timestamp with time zone    |           |          | 
- keepuntil    | timestamp with time zone    |           | not null | now() + '14 days'::interval
- on_complete  | boolean                     |           | not null | false
- output       | jsonb                       |           |          | 
+    Column     |            Type             | Collation | Nullable |           Default           | Storage  | Compression | Stats target | Description 
+---------------+-----------------------------+-----------+----------+-----------------------------+----------+-------------+--------------+-------------
+ id            | uuid                        |           | not null | gen_random_uuid()           | plain    |             |              | 
+ name          | text                        |           | not null |                             | extended |             |              | 
+ priority      | integer                     |           | not null | 0                           | plain    |             |              | 
+ data          | jsonb                       |           |          |                             | extended |             |              | 
+ state         | pgboss.job_state            |           | not null | 'created'::pgboss.job_state | plain    |             |              | 
+ retry_limit   | integer                     |           | not null | 2                           | plain    |             |              | 
+ retry_count   | integer                     |           | not null | 0                           | plain    |             |              | 
+ retry_delay   | integer                     |           | not null | 0                           | plain    |             |              | 
+ retry_backoff | boolean                     |           | not null | false                       | plain    |             |              | 
+ start_after   | timestamp with time zone    |           | not null | now()                       | plain    |             |              | 
+ started_on    | timestamp with time zone    |           |          |                             | plain    |             |              | 
+ singleton_key | text                        |           |          |                             | extended |             |              | 
+ singleton_on  | timestamp without time zone |           |          |                             | plain    |             |              | 
+ expire_in     | interval                    |           | not null | '00:15:00'::interval        | plain    |             |              | 
+ created_on    | timestamp with time zone    |           | not null | now()                       | plain    |             |              | 
+ completed_on  | timestamp with time zone    |           |          |                             | plain    |             |              | 
+ keep_until    | timestamp with time zone    |           | not null | now() + '14 days'::interval | plain    |             |              | 
+ output        | jsonb                       |           |          |                             | extended |             |              | 
+ dead_letter   | text                        |           |          |                             | extended |             |              | 
+ policy        | text                        |           |          |                             | extended |             |              | 
+
 ```
 
 Columns/values to note are 
@@ -95,8 +97,8 @@ It is recommended you run every query in a transaction, so that you can abort th
 
     update pgboss.job
     set state = 'created',
-    completedon = null,
-    retrycount = 0,
+    completed_on = null,
+    retry_count = 0,
     state = 'created'
     where id = '<id>';
     
@@ -152,8 +154,8 @@ If a job has failed, and you want to retry it, you can update the job to `create
 ```postgresql
     update pgboss.job
     set state = 'created',
-    completedon = null,
-    retrycount = 0,
+    completed_on = null,
+    retry_count = 0,
     state = 'created'
 --  output = null  
     where id = '<id>';

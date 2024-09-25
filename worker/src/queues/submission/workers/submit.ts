@@ -19,7 +19,7 @@ logger.info(`REQUEST_TIMEOUT set to ${REQUEST_TIMEOUT}`);
  * When a "submission" event is detected, this worker POSTs the data to `job.data.data.webhook_url`
  * The source of this event is the runner, after a user has submitted a form.
  */
-export async function submitHandler(job: Job<SubmitJob>) {
+export async function submitHandler([job]: Job<SubmitJob>[]) {
   const jobId = job.id;
   logger.info({ jobId }, `received ${worker} job`);
 
