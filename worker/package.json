@@ -4,7 +4,7 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",
-    "start:local": "yarn tsc -w & nodemon -q -w dist dist/index.js",
+    "start:local": "yarn tsc -w & node --watch dist/index.js",
     "test": "jest --coverage",
     "release": "semantic-release",
     "lint": "eslint ."
