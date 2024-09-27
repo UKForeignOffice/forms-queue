@@ -3,7 +3,8 @@
     "url": "QUEUE_URL",
     "archiveFailedAfterDays": "ARCHIVE_FAILED_AFTER_DAYS",
     "deleteArchivedAfterDays": "DELETE_ARCHIVED_IN_DAYS",
-    "schema": "QUEUE_SCHEMA"
+    "schema": "QUEUE_SCHEMA",
+    "drainSchema": "QUEUE_DRAIN_SCHEMA"
   },
   "Submission": {
     "requestTimeout": "SUBMISSION_REQUEST_TIMEOUT"

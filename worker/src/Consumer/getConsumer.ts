@@ -46,7 +46,7 @@ export async function create(options: ConsumerOptions) {
     throw new ApplicationError("CONSUMER", "START_FAILED", `Failed to start listener ${e.message}. Exiting`);
   }
 
-  logger.info(`Successfully started consumer at ${URL}`);
+  logger.info(`Successfully started consumer at ${URL} on schema ${schema}`);
   return boss;
 }
 

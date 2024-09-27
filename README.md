@@ -72,13 +72,14 @@ See [TROUBLESHOOTING.md](./TROUBLESHOOTING.md) on how to troubleshoot the worker
 
 ## Environment variables
 
-| Environment variable       | type       | Default                                   | Description                                                                                                                                    |
-|----------------------------|------------|-------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------|
-| QUEUE_URL                  | string     | postgres://user:root@localhost:5432/queue | The connection string to the database, including username and password                                                                         |
-| ARCHIVE_FAILED_AFTER_DAYS  | string/int | 30                                        | How long to keep failed jobs in the pgboss.job before moving it to pgboss.archive                                                              |
-| DELETE_ARCHIVED_IN_DAYS    | string/int | 7                                         | How long to keep jobs in pgboss.archive before deleting it                                                                                     |
+| Environment variable       | type       | Default                                   | Description                                                                                                                                                  |
+|----------------------------|------------|-------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| QUEUE_URL                  | string     | postgres://user:root@localhost:5432/queue | The connection string to the database, including username and password                                                                                       |
+| ARCHIVE_FAILED_AFTER_DAYS  | string/int | 30                                        | How long to keep failed jobs in the pgboss.job before moving it to pgboss.archive                                                                            |
+| DELETE_ARCHIVED_IN_DAYS    | string/int | 7                                         | How long to keep jobs in pgboss.archive before deleting it                                                                                                   |
 | SUBMISSION_REQUEST_TIMEOUT | string/int | 2000                                      | How long to keep the POST request alive for in milliseconds. This should be higher (20-30s) if integrating into CASEBOOK/Orbit which has long response times |
-| POLLING_INTERVAL_SECONDS   | string/int | 2                                         | The frequency to check for new jobs in seconds                                                                                                 |
-| QUEUE_SCHEMA               | string     | pgboss                                    | The schema name for pgboss to use. If it does not exist, pgboss will create the schema and related tables in this schema.                      |
+| POLLING_INTERVAL_SECONDS   | string/int | 2                                         | The frequency to check for new jobs in seconds                                                                                                               |
+| QUEUE_SCHEMA               | string     | pgboss                                    | The schema name for pgboss to use. If it does not exist, pgboss will create the schema and related tables in this schema.                                    |
+| QUEUE_DRAIN_SCHEMA         | string?    |                                           | Moves inflight (created) messages from this schema to QUEUE_SCHEMA                                                                                           |
 
 Types are described as string/int since kubernetes only accepts strings. Strings are parsed into int.
