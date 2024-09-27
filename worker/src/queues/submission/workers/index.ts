@@ -13,7 +13,7 @@ const pollingIntervalSeconds = parseInt(config.get<"string">("pollingIntervalSec
 export async function setupSubmissionWorkers() {
   const consumer: PgBoss = await getConsumer();
 
-  logger.info(`starting queue '${queue}' workers, checking every ${pollingIntervalSeconds}ss`);
+  logger.info(`starting queue '${queue}' workers, checking every ${pollingIntervalSeconds}s`);
 
   logger.info(`starting 'submitHandler' listener`);
   await consumer.createQueue("submission", { name: "submission", policy: "standard" });
