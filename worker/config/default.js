@@ -3,11 +3,11 @@ module.exports = {
     url: "postgres://user:root@localhost:5432/queue",
     archiveFailedInDays: 30,
     deleteArchivedAfterDays: 7,
-    schema: "pgboss",
+    schema: "pgboss_v10",
   },
   Submission: {
     requestTimeout: 2000,
   },
-  newJobCheckInterval: "2000",
+  pollingIntervalSeconds: 2,
   SUPPRESS_NO_CONFIG_WARNING: true,
 };

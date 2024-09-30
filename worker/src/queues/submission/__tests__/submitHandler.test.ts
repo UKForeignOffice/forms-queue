@@ -21,5 +21,5 @@ test("submitHandler returns reference if there was one", async () => {
     },
   });
 
-  expect(submitHandler(job));
+  expect(await submitHandler([job])).toStrictEqual({ reference: "ABC-DEFG" });
 });
