@@ -23,7 +23,7 @@ export async function setupSubmissionWorkers() {
   if (config.has("Queue.drainSchema")) {
     const queueDrainSchema = config.get<"string">("Queue.drainSchema");
     try {
-      const drainSchema = config.get<string>("QUEUE_DRAIN_SCHEMA");
+      const drainSchema = config.get<string>("Queue.drainSchema");
       await drainQueue(queue, drainSchema);
     } catch (err) {
       logger.error({ err }, `draining of 'submission on ${queueDrainSchema} failed`);
