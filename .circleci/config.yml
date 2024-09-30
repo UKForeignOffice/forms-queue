@@ -114,8 +114,7 @@ jobs:
           name: Install OpenVPN
           command: |
             sudo apt-get update
-            sudo apt-get install net-tools -y
-            sudo apt-get install openvpn openvpn-systemd-resolved -y
+            sudo apt-get install openvpn openvpn-systemd-resolved
 
       - run:
           name: Check IP before VPN connection
