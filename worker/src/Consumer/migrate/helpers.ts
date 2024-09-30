@@ -40,8 +40,14 @@ export async function getInflightMessages(queue: string, schema: string) {
 
 export async function migrateInflightMessagesFromV9(queue: string, schema: string) {
   logger.info({ queue, schema }, `Starting migration from ${schema} to ${currentSchema}`);
-  await db.query(`
-      INSERT INTO ${currentSchema}.job (
+
+  // DB connection must be established for transactions to run properly
+  const client = await db.connect();
+
+  try {
+    await client.query("BEGIN");
+
+    await client.query(`INSERT INTO ${currentSchema}.job (
         id,
         name,
         data,
@@ -52,7 +58,8 @@ export async function migrateInflightMessagesFromV9(queue: string, schema: strin
         expire_in,
         created_on,
         keep_until,
-        output)
+        output
+      )
 
       SELECT id,
              name,
@@ -70,13 +77,22 @@ export async function migrateInflightMessagesFromV9(queue: string, schema: strin
         AND state = 'created'
       ON CONFLICT DO NOTHING`);
 
-  logger.info(`Copied inflight messages for queue ${queue} from ${schema} to ${currentSchema}`);
+    logger.info(`Copied inflight messages for queue ${queue} from ${schema} to ${currentSchema}`);
 
-  await db.query(`
+    await client.query(`
     UPDATE ${schema}.job
      SET state = 'completed' 
      WHERE name = '${queue}' and state = 'created'
   `);
+
+    await client.query("COMMIT");
+  } catch (err) {
+    logger.error({ err }, `Migration for queue ${queue} from ${schema} to ${currentSchema} failed`);
+    await client.query("ROLLBACK");
+    throw err;
+  } finally {
+    await client.release();
+  }
 
   logger.info({ drainSchema: schema, queue }, `Inflight messages drained successfully for schema ${schema}, queue ${queue}.`);
 }
