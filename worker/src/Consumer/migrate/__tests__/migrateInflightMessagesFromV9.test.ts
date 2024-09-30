@@ -18,6 +18,10 @@ beforeEach(() => {
   pool = new Pool();
 });
 
+afterEach(() => {
+  jest.clearAllMocks();
+});
+
 test("migrateInflightMessagesFromV9 calls ROLLBACK is called if transaction fails", async () => {
   pool.query
     .mockResolvedValueOnce() // resolve the BEGIN query
