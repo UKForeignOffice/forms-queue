@@ -27,7 +27,7 @@ export async function getInflightMessages(queue: string, schema: string) {
         ${schema}.job
     WHERE 
         name = '${queue}'
-    AND state = 'created'`;
+    AND state in ('created', 'retry')`;
 
   const inflightMessages = await db.query(query);
   const numberOfMessages = inflightMessages?.rows.length;
