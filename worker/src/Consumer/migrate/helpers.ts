@@ -45,8 +45,8 @@ export async function migrateInflightMessagesFromV9(queue: string, schema: strin
   const client = await db.connect();
 
   try {
+    logger.info(`Copying inflight messages for queue ${queue} from ${schema} to ${currentSchema} and deleting old messages`);
     await client.query("BEGIN");
-
     await client.query(`INSERT INTO ${currentSchema}.job (
         id,
         name,
@@ -77,15 +77,21 @@ export async function migrateInflightMessagesFromV9(queue: string, schema: strin
         AND state = 'created'
       ON CONFLICT DO NOTHING`);
 
-    logger.info(`Copied inflight messages for queue ${queue} from ${schema} to ${currentSchema}`);
-
     await client.query(`
     UPDATE ${schema}.job
      SET state = 'completed' 
-     WHERE name = '${queue}' and state = 'created'
+     WHERE name = '${queue}' and state = 'created';
+
+    DELETE from ${schema}.job
+    WHERE name = '${queue}' and state = 'completed';
+
+    DELETE from ${schema}.archive
+    WHERE name = '${queue}' and state = 'completed';
   `);
 
     await client.query("COMMIT");
+
+    logger.info(`Migration for ${queue} from ${schema} to ${currentSchema} complete`);
   } catch (err) {
     logger.error({ err }, `Migration for queue ${queue} from ${schema} to ${currentSchema} failed`);
     await client.query("ROLLBACK");
