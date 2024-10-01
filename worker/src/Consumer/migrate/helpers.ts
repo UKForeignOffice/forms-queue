@@ -74,24 +74,18 @@ export async function migrateInflightMessagesFromV9(queue: string, schema: strin
              output
       FROM ${schema}.job
       WHERE name = '${queue}'
-        AND state = 'created'
+        AND state IN ('created', 'retry')
       ON CONFLICT DO NOTHING`);
 
     await client.query(`
-    UPDATE ${schema}.job
-     SET state = 'completed' 
-     WHERE name = '${queue}' and state = 'created';
+        DELETE from ${schema}.job
+        WHERE name = '${queue}' and state IN ('created', 'completed', 'retry');
 
-    DELETE from ${schema}.job
-    WHERE name = '${queue}' and state = 'completed';
-
-    DELETE from ${schema}.archive
-    WHERE name = '${queue}' and state = 'completed';
-  `);
+        DELETE from ${schema}.archive
+        WHERE name = '${queue}' and state IN ('created', 'completed', 'retry');
+        `);
 
     await client.query("COMMIT");
-
-    logger.info(`Migration for ${queue} from ${schema} to ${currentSchema} complete`);
   } catch (err) {
     logger.error({ err }, `Migration for queue ${queue} from ${schema} to ${currentSchema} failed`);
     await client.query("ROLLBACK");
@@ -100,5 +94,5 @@ export async function migrateInflightMessagesFromV9(queue: string, schema: strin
     await client.release();
   }
 
-  logger.info({ drainSchema: schema, queue }, `Inflight messages drained successfully for schema ${schema}, queue ${queue}.`);
+  logger.info({ drainSchema: schema, queue }, `Inflight messages drained successfully for queue ${queue}, from schema ${schema} to ${currentSchema}`);
 }
