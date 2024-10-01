@@ -27,7 +27,7 @@ export async function getInflightMessages(queue: string, schema: string) {
         ${schema}.job
     WHERE 
         name = '${queue}'
-    AND state = 'created'`;
+    AND state in ('created', 'retry')`;
 
   const inflightMessages = await db.query(query);
   const numberOfMessages = inflightMessages?.rows.length;
@@ -45,8 +45,8 @@ export async function migrateInflightMessagesFromV9(queue: string, schema: strin
   const client = await db.connect();
 
   try {
+    logger.info(`Copying inflight messages for queue ${queue} from ${schema} to ${currentSchema} and deleting old messages`);
     await client.query("BEGIN");
-
     await client.query(`INSERT INTO ${currentSchema}.job (
         id,
         name,
@@ -74,16 +74,16 @@ export async function migrateInflightMessagesFromV9(queue: string, schema: strin
              output
       FROM ${schema}.job
       WHERE name = '${queue}'
-        AND state = 'created'
+        AND state IN ('created', 'retry')
       ON CONFLICT DO NOTHING`);
 
-    logger.info(`Copied inflight messages for queue ${queue} from ${schema} to ${currentSchema}`);
-
     await client.query(`
-    UPDATE ${schema}.job
-     SET state = 'completed' 
-     WHERE name = '${queue}' and state = 'created'
-  `);
+        DELETE from ${schema}.job
+        WHERE name = '${queue}' and state IN ('created', 'completed', 'retry');
+
+        DELETE from ${schema}.archive
+        WHERE name = '${queue}' and state IN ('created', 'completed', 'retry');
+        `);
 
     await client.query("COMMIT");
   } catch (err) {
@@ -94,5 +94,5 @@ export async function migrateInflightMessagesFromV9(queue: string, schema: strin
     await client.release();
   }
 
-  logger.info({ drainSchema: schema, queue }, `Inflight messages drained successfully for schema ${schema}, queue ${queue}.`);
+  logger.info({ drainSchema: schema, queue }, `Inflight messages drained successfully for queue ${queue}, from schema ${schema} to ${currentSchema}`);
 }
