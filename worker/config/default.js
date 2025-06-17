@@ -2,7 +2,7 @@ module.exports = {
   Queue: {
     url: "postgres://user:root@localhost:5432/queue",
     archiveFailedInDays: 30,
-    deleteArchivedAfterDays: 7,
+    deleteArchivedAfterDays: 60,
     schema: "pgboss_v10",
   },
   Submission: {
