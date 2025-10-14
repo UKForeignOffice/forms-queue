@@ -11,6 +11,8 @@ const logger = pino().child({
 });
 
 const pollingIntervalSeconds = parseInt(config.get<"string">("pollingIntervalSeconds"));
+const deleteAfterDays = parseInt(config.get<string>("Queue.deleteArchivedAfterDays"));
+const retentionMinutes = deleteAfterDays * 24 * 60;
 
 export async function setupSubmissionWorkers() {
   const consumer: PgBoss = await getConsumer();
@@ -18,9 +20,10 @@ export async function setupSubmissionWorkers() {
   logger.info(`starting queue '${queue}' workers, checking every ${pollingIntervalSeconds}s`);
 
   logger.info(`starting 'submitHandler' listener`);
-  await consumer.createQueue("submission", { name: "submission", policy: "standard" });
+  await consumer.createQueue("submission", { name: "submission", policy: "standard", retentionMinutes });
+  await consumer.updateQueue("submission", { name: "submission", retentionMinutes });
 
-  if (config.has("Queue.drainSchema")) {
+    if (config.has("Queue.drainSchema")) {
     const queueDrainSchema = config.get<"string">("Queue.drainSchema");
     try {
       const drainSchema = config.get<string>("Queue.drainSchema");
