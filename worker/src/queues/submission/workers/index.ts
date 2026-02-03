@@ -6,32 +6,62 @@ import config from "config";
 import { drainQueue } from "../../../Consumer/migrate";
 
 const queue = "submission";
-const logger = pino().child({
-  queue,
-});
+const logger = pino().child({ queue });
 
-const pollingIntervalSeconds = parseInt(config.get<"string">("pollingIntervalSeconds"));
-const deleteAfterDays = parseInt(config.get<string>("Queue.deleteArchivedAfterDays"));
+const pollingIntervalSeconds = parseInt(
+    config.get<string>("pollingIntervalSeconds")
+);
+
+const deleteAfterDays = parseInt(
+    config.get<string>("Queue.deleteArchivedAfterDays")
+);
+
 const retentionMinutes = deleteAfterDays * 24 * 60;
 
 export async function setupSubmissionWorkers() {
   const consumer: PgBoss = await getConsumer();
 
-  logger.info(`starting queue '${queue}' workers, checking every ${pollingIntervalSeconds}s`);
+  logger.info(
+      { pollingIntervalSeconds },
+      `starting queue '${queue}' workers`
+  );
 
-  logger.info(`starting 'submitHandler' listener`);
-  await consumer.createQueue("submission", { name: "submission", policy: "standard", retentionMinutes });
-  await consumer.updateQueue("submission", { name: "submission", retentionMinutes });
+  // Create queue ONLY if it does not exist
+  const existingQueue = await consumer.getQueue(queue);
 
-    if (config.has("Queue.drainSchema")) {
-    const queueDrainSchema = config.get<"string">("Queue.drainSchema");
+  if (!existingQueue) {
+    logger.info(
+        { retentionMinutes },
+        "queue does not exist — creating"
+    );
+
+    await consumer.createQueue(queue, {
+      name: "submission",
+      policy: "standard",
+      retentionMinutes
+    });
+
+  } else {
+    logger.info(
+        {
+          retentionMinutes: existingQueue.retentionMinutes
+        },
+        "queue already exists — skipping creation"
+    );
+  }
+
+  if (config.has("Queue.drainSchema")) {
+    const queueDrainSchema = config.get<string>("Queue.drainSchema");
     try {
-      const drainSchema = config.get<string>("Queue.drainSchema");
-      await drainQueue(queue, drainSchema);
+      await drainQueue(queue, queueDrainSchema);
     } catch (err) {
-      logger.error({ err }, `draining of 'submission on ${queueDrainSchema} failed`);
+      logger.error({ err }, `draining of '${queue}' on ${queueDrainSchema} failed`);
     }
   }
 
-  await consumer.work("submission", { pollingIntervalSeconds, batchSize: 1 }, submit.submitHandler);
+  await consumer.work(
+      queue,
+      { pollingIntervalSeconds, batchSize: 1 },
+      submit.submitHandler
+  );
 }
