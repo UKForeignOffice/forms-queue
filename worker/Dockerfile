@@ -3,8 +3,7 @@
 # Base image contains the updated OS and
 # It also configures the non-root user that will be given permission to copied files/folders in every subsequent stages
 FROM node:22-alpine AS base
-RUN npm install -g npm@latest && \
-    apk update && \
+RUN apk update && \
     apk upgrade && \
     apk add --no-cache bash git
 
