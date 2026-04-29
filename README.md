@@ -4,7 +4,7 @@ A monorepo has been set up so it is easy to add new related services or code in 
 
 ## Prerequisites
 1. A node version manager, like [nvm](https://formulae.brew.sh/formula/nvm), or [n](https://github.com/tj/n)
-2. node 20.x.x
+2. node 22.x.x
 3. yarn >= v1.22. This project uses yarn 4. Yarn v1.22 will load the correct version of yarn by looking at [.yarnrc](./.yarnrc.yml) and [.yarn](./yarn)
 4. Docker >= 3.9 - [Install docker engine](https://docs.docker.com/engine/install/)
 
