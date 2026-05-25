@@ -34,7 +34,7 @@
     "jest-mock-extended": "^3.0.7",
     "prettier": "^3.8.3",
     "semantic-release": "^24.2.9",
-    "typescript": "^5.9.3"
+    "typescript": "^6.0.3"
   },
   "packageManager": "yarn@4.0.2",
   "release": {
