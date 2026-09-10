@@ -1,5 +1,5 @@
 # forms-queue
-This ia a monorepo for forms-queue/worker. 
+This is a monorepo for forms-queue/worker.
 A monorepo has been set up so it is easy to add new related services or code in future.
 
 ## Prerequisites
