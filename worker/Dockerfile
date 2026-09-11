@@ -24,8 +24,9 @@ RUN yarn workspaces focus @forms-queue/worker --production
 # Stage 3
 # Build stage
 # In this layer we copy the built output from stage 2, ensuring the docker image is as light as possible
-FROM base AS dist
+FROM node:24-alpine AS dist
 WORKDIR /usr/dist/app
+RUN rm -rf /usr/local/lib/node_modules/npm /usr/local/include/node
 COPY .yarn .yarn
 COPY --from=build /usr/src/app/node_modules node_modules
 COPY --from=build /usr/src/app/worker/config config
