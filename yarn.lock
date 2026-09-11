@@ -1777,7 +1777,7 @@ __metadata:
     axios: "npm:^1.18.0"
     babel-jest: "npm:^29.7.0"
     config: "npm:^3.3.12"
-    eslint: "npm:10.10.0"
+    eslint: "npm:^10.10.0"
     eslint-config-prettier: "npm:^9.1.2"
     eslint-plugin-prettier: "npm:^5.5.5"
     globals: "npm:^15.15.0"
@@ -4657,7 +4657,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint@npm:10.10.0":
+"eslint@npm:^10.10.0":
   version: 10.10.0
   resolution: "eslint@npm:10.10.0"
   dependencies:
@@ -5081,7 +5081,7 @@ __metadata:
     "@eslint/js": "npm:^9.39.4"
     "@types/jest": "npm:^29.5.14"
     dotenv: "npm:^16.6.1"
-    eslint: "npm:10.10.0"
+    eslint: "npm:^10.10.0"
     eslint-config-prettier: "npm:^9.1.2"
     eslint-plugin-prettier: "npm:^5.5.5"
     handlebars: "npm:^4.7.9"
