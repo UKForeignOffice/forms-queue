@@ -56,7 +56,7 @@ To rebuild the server after making some changes, run the following commands:
 
 ```
 docker compose down
-docker compose -d --build
+docker compose up -d --build
 ```
 
 
